@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# get current desktop count 
+DESKTOP_COUNT=$(qdbus org.kde.KWin /VirtualDesktopManager org.kde.KWin.VirtualDesktopManager.count)
+# get current Desktop
+CURRENT_DESKTOP=$(qdbus org.kde.KWin /KWin org.kde.KWin.currentDesktop)
+
+# if we're on the last desktop, create a new one with proper numbering
+if [ "$CURRENT_DESKTOP" -eq "$DESKTOP_COUNT" ]; then
+    NEW_DESKTOP_NUMBER=$((DESKTOP_COUNT + 1))
+    qdbus org.kde.KWin /VirtualDesktopManager org.kde.KWin.VirtualDesktopManager.createDesktop "$DESKTOP_COUNT" "Desktop $NEW_DESKTOP_NUMBER" > /dev/null
+fi
+
+# Go to next desktop
+qdbus org.kde.KWin /KWin org.kde.KWin.nextDesktop > /dev/null
+
+# Launch whatever command was passed with all its arguments
+exec "$@"

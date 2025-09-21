@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# get current desktop count 
+DESKTOP_COUNT=$(qdbus org.kde.KWin /VirtualDesktopManager org.kde.KWin.VirtualDesktopManager.count)
+# get current desktop
+CURRENT_DESKTOP=$(qdbus org.kde.KWin /KWin org.kde.KWin.currentDesktop)
+
+# create new desktop at next position
+NEW_DESKTOP_POSITION=$((CURRENT_DESKTOP))
+qdbus org.kde.KWin /VirtualDesktopManager org.kde.KWin.VirtualDesktopManager.createDesktop "$NEW_DESKTOP_POSITION" "TempDesktop" > /dev/null
+
+# rename all desktops according to current position
+NEW_DESKTOP_COUNT=$(qdbus org.kde.KWin /VirtualDesktopManager org.kde.KWin.VirtualDesktopManager.count)
+
+for desktop_pos in $(seq 1 $NEW_DESKTOP_COUNT); do
+    # switch to each desktop to get its ID
+    qdbus org.kde.KWin /KWin org.kde.KWin.setCurrentDesktop $desktop_pos > /dev/null
+    CURRENT_ID=$(qdbus org.kde.KWin /VirtualDesktopManager org.kde.KWin.VirtualDesktopManager.current)
+    # rename each desktop
+    qdbus org.kde.KWin /VirtualDesktopManager org.kde.KWin.VirtualDesktopManager.setDesktopName "$CURRENT_ID" "Desktop $desktop_pos" > /dev/null
+done
+
+# go to newly created desktop
+qdbus org.kde.KWin /KWin org.kde.KWin.setCurrentDesktop $((CURRENT_DESKTOP + 1)) > /dev/null
+
+exec "$@"
