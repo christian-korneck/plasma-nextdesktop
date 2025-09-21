@@ -1,4 +1,4 @@
-# KDE Plasma 6: start a program on the **next** (or on a **new**) virtual Desktop
+# KDE Plasma 6 on Wayland/kwin: start a program on the **next** (or on a **new**) virtual Desktop
 
 Two tiny shell scripts (`next-desktop` and `new-desktop`) that will start any application on the next or a new next Virtual Desktop.
 
